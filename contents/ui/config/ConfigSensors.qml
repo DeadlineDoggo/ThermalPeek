@@ -13,9 +13,24 @@ KCM.ScrollViewKCM {
 
     property var selected: JSON.parse(cfg_sensors || "[]")
     function isSelected(id) { return selected.some(s => s.sensorId === id); }
+    function tagOf(id) { const s = selected.find(s => s.sensorId === id); return s ? (s.tag ?? "") : ""; }
+    function setTag(id, tag) {
+        selected = selected.map(s => s.sensorId === id ? { sensorId: s.sensorId, name: s.name, tag: tag } : s);
+        cfg_sensors = JSON.stringify(selected);
+    }
+    // Suggest a short tag: CPU, C1.., NVME1.., GPU.., else first word
+    function autoTag(id, name) {
+        let m;
+        if (id.startsWith("cpu/all")) return "CPU";
+        if ((m = id.match(/^cpu\/cpu(\d+)\//))) return "C" + (Number(m[1]) + 1);
+        if (/gpu/i.test(id + name)) return "GPU";
+        if (/nvme/i.test(name)) { m = name.match(/nvme\D*(\d+)/i); return "NVME" + (m ? Number(m[1]) + 1 : ""); }
+        if (/acpi/i.test(name)) return "ACPI";
+        return name.split(/[ :]/)[0].toUpperCase().slice(0, 6);
+    }
     function toggle(id, name, on) {
         let list = selected.filter(s => s.sensorId !== id);
-        if (on) list.push({ sensorId: id, name: name });
+        if (on) list.push({ sensorId: id, name: name, tag: autoTag(id, name) });
         selected = list;
         cfg_sensors = JSON.stringify(list);
     }
@@ -70,6 +85,17 @@ KCM.ScrollViewKCM {
             contentItem: ColumnLayout {
                 spacing: 0
                 QQC2.Label { text: info.section + " — " + info.name; Layout.fillWidth: true; elide: Text.ElideRight }
+                RowLayout {
+                    visible: checked
+                    QQC2.Label { text: i18n("Tag:"); font: Kirigami.Theme.smallFont }
+                    QQC2.TextField {
+                        Layout.preferredWidth: Kirigami.Units.gridUnit * 8
+                        maximumLength: 12
+                        placeholderText: page.autoTag(sid, info.name)
+                        text: page.tagOf(sid)
+                        onTextEdited: page.setTag(sid, text)
+                    }
+                }
                 QQC2.Label {
                     Layout.fillWidth: true
                     font: Kirigami.Theme.smallFont

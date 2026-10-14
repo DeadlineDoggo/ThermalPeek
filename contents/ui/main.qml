@@ -16,7 +16,7 @@ PlasmoidItem {
     preferredRepresentation: fullRepresentation
     Plasmoid.backgroundHints: PlasmaCore.Types.DefaultBackground | PlasmaCore.Types.ConfigurableBackground
     toolTipMainText: "Thermal Peek"
-    toolTipSubText: sensors.length ? sensors.map(s => s.name).join("\n") : i18n("No sensors selected. Right-click → Configure…")
+    toolTipSubText: sensors.length ? sensors.map(s => (s.tag ? s.tag + " – " : "") + s.name).join("\n") : i18n("No sensors selected. Right-click → Configure…")
 
     // Panel thickness comes from the panel itself (root), never from our own content: no size loop.
     readonly property real thickness: horizontal ? root.height : root.width
@@ -44,6 +44,7 @@ PlasmoidItem {
                     required property var modelData
                     sensorId: modelData.sensorId
                     sensorName: modelData.name
+                    sensorTag: modelData.tag ?? ""
                     cfg: Plasmoid.configuration
                     inPanel: root.inPanel
                     panelThickness: root.thickness

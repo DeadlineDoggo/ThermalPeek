@@ -8,6 +8,7 @@ import org.kde.kquickcontrols as KQC
 KCM.SimpleKCM {
     id: page
     property string cfg_displayMode
+    property bool   cfg_showTag
     property bool   cfg_showName
     property bool   cfg_fahrenheit
     property int    cfg_updateRate
@@ -39,7 +40,8 @@ KCM.SimpleKCM {
         }
         QQC2.SpinBox { Kirigami.FormData.label: i18n("Gauge size (px):"); from: 16; to: 256; value: page.cfg_gaugeSize
                        onValueModified: page.cfg_gaugeSize = value }
-        QQC2.CheckBox { text: i18n("Show sensor name"); checked: page.cfg_showName; onToggled: page.cfg_showName = checked }
+        QQC2.CheckBox { text: i18n("Show tags (CPU, NVME1…)"); checked: page.cfg_showTag; onToggled: page.cfg_showTag = checked }
+        QQC2.CheckBox { text: i18n("Show full sensor name (desktop only)"); checked: page.cfg_showName; onToggled: page.cfg_showName = checked }
         QQC2.CheckBox { text: i18n("Fahrenheit");       checked: page.cfg_fahrenheit; onToggled: page.cfg_fahrenheit = checked }
         QQC2.SpinBox { Kirigami.FormData.label: i18n("Update every (s):"); from: 1; to: 60; value: page.cfg_updateRate
                        onValueModified: page.cfg_updateRate = value }

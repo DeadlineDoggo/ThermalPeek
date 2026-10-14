@@ -5,11 +5,12 @@ import org.kde.kirigami as Kirigami
 import org.kde.ksysguard.sensors as Sensors
 import "gauges"
 
-ColumnLayout {
+GridLayout {
     id: si
 
     required property string sensorId
     required property string sensorName
+    property string sensorTag: ""
     property bool inPanel: false
     property real panelThickness: 0
 
@@ -40,12 +41,25 @@ ColumnLayout {
         return cfg.fahrenheit ? Math.round(celsius * 9 / 5 + 32) + "°F" : Math.round(celsius) + "°C";
     }
 
-    spacing: Kirigami.Units.smallSpacing
+    // Panel: tag sits left of the gauge (saves height). Desktop: tag above.
+    columns: inPanel ? 2 : 1
+    columnSpacing: Kirigami.Units.smallSpacing
+    rowSpacing: Kirigami.Units.smallSpacing
 
     Sensors.Sensor {
         id: sensor
         sensorId: si.sensorId
         updateRateLimit: si.cfg.updateRate * 1000
+    }
+
+    PlasmaComponents.Label {
+        visible: si.cfg.showTag && si.sensorTag.length > 0
+        text: si.sensorTag
+        color: si.fg
+        opacity: 0.75
+        font.bold: true
+        font.pixelSize: Math.round(Math.max(9, (si.cfg.fontSize > 0 ? si.cfg.fontSize : Kirigami.Theme.defaultFont.pixelSize) * 0.85))
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
     }
 
     // ---- gauge ----
