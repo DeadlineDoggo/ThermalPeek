@@ -66,7 +66,7 @@ KCM.ScrollViewKCM {
 
     header: Kirigami.InlineMessage {
         visible: true
-        text: i18n("Tick the temperature sensors to show. Sensors come from KSysGuard (lm-sensors, GPU, disks).")
+        text: i18n("Tick the temperature sensors to show. Sensors come from KSysGuard (lm-sensors, GPU, disks). Change their order on the Order page.")
     }
 
     // Sensors saved in the config that are not in the live list (e.g. dGPU switched off via envycontrol / MUX).
