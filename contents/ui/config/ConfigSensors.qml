@@ -44,6 +44,9 @@ KCM.ScrollViewKCM {
             const idx = sourceModel.index(row, 0);
             const id = sourceModel.data(idx, Sensors.SensorTreeModel.SensorId);
             const disp = sourceModel.data(idx, Qt.DisplayRole);
+            // Always offer CPU aggregate and GPU temperatures, whatever their display text looks like
+            if (/^cpu\/all\/(average|maximum|minimum)Temperature$/.test(id) || /^gpu\/gpu\d+\/temperature$/.test(id))
+                return true;
             return id.length > 0 && disp.includes("(°C)") && !disp.includes("[");
         }
     }
@@ -66,9 +69,34 @@ KCM.ScrollViewKCM {
         text: i18n("Tick the temperature sensors to show. Sensors come from KSysGuard (lm-sensors, GPU, disks).")
     }
 
+    // Sensors saved in the config that are not in the live list (e.g. dGPU switched off via envycontrol / MUX).
+    // They stay saved and hidden on the panel; evaluated when the model (re)fills, i.e. once per config open.
+    readonly property var missing: {
+        tempModel.count;
+        const present = new Set();
+        for (let i = 0; i < tempModel.count; i++)
+            present.add(tempModel.data(tempModel.index(i, 0), Sensors.SensorTreeModel.SensorId));
+        return selected.filter(s => !present.has(s.sensorId));
+    }
+
     view: ListView {
         model: tempModel
         clip: true
+        footer: ColumnLayout {
+            width: ListView.view.width
+            visible: page.missing.length > 0
+            Kirigami.Heading { level: 4; text: i18n("Saved but currently unavailable (kept, hidden on the panel)") }
+            Repeater {
+                model: page.missing
+                QQC2.CheckDelegate {
+                    required property var modelData
+                    Layout.fillWidth: true
+                    checked: true
+                    text: (modelData.tag ? modelData.tag + " — " : "") + modelData.name + "   (" + modelData.sensorId + ")"
+                    onToggled: page.toggle(modelData.sensorId, modelData.name, checked)
+                }
+            }
+        }
         section.property: "dummy"
         delegate: QQC2.CheckDelegate {
             required property int index

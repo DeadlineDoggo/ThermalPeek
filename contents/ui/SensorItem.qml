@@ -16,6 +16,8 @@ GridLayout {
     property real panelThickness: 0
 
     required property var cfg
+    // Sensor missing (e.g. dGPU powered off): hide it completely; it stays saved in the config
+    visible: valid
     readonly property real celsius: sensor.value === undefined || isNaN(Number(sensor.value)) ? NaN : Number(sensor.value)
     readonly property bool valid: !isNaN(celsius)
 
