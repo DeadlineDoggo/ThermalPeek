@@ -4,6 +4,7 @@ import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
 import org.kde.ksysguard.sensors as Sensors
 import "gauges"
+import "Tags.js" as Tags
 
 GridLayout {
     id: si
@@ -32,8 +33,11 @@ GridLayout {
         ? Math.max(0, Math.min(1, (celsius - cfg.minTemp) / Math.max(1, cfg.maxTemp - cfg.minTemp))) : 0
     readonly property color fg: cfg.useCustomTextColor ? cfg.textColor : Kirigami.Theme.textColor
     // In a panel the gauge scales to the panel thickness; otherwise use the configured size
+    readonly property string effectiveTag: sensorTag.length > 0 ? sensorTag : Tags.autoTag(sensorId, sensorName)
+    readonly property bool tagShown: cfg.showTag && effectiveTag.length > 0
+    // In a panel, leave room for the tag label above the gauge
     readonly property int px: inPanel && panelThickness > 0
-        ? Math.max(14, Math.round(panelThickness * (cfg.displayMode === "circle" ? 0.9 : 0.55)))
+        ? Math.max(14, Math.round(panelThickness * (cfg.displayMode === "circle" ? 0.9 : 0.55) * (tagShown ? 0.75 : 1)))
         : Math.round(cfg.gaugeSize)
 
     readonly property string tempText: {
@@ -41,8 +45,8 @@ GridLayout {
         return cfg.fahrenheit ? Math.round(celsius * 9 / 5 + 32) + "°F" : Math.round(celsius) + "°C";
     }
 
-    // Panel: tag sits left of the gauge (saves height). Desktop: tag above.
-    columns: inPanel ? 2 : 1
+    // Tag above the gauge
+    columns: 1
     columnSpacing: Kirigami.Units.smallSpacing
     rowSpacing: Kirigami.Units.smallSpacing
 
@@ -53,8 +57,8 @@ GridLayout {
     }
 
     PlasmaComponents.Label {
-        visible: si.cfg.showTag && si.sensorTag.length > 0
-        text: si.sensorTag
+        visible: si.tagShown
+        text: si.effectiveTag
         color: si.fg
         opacity: 0.75
         font.bold: true
