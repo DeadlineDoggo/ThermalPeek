@@ -45,6 +45,7 @@ PlasmoidItem {
                     sensorId: modelData.sensorId
                     sensorName: modelData.name
                     sensorTag: modelData.tag ?? ""
+                    sensorIcon: modelData.icon ?? "auto"
                     cfg: Plasmoid.configuration
                     inPanel: root.inPanel
                     panelThickness: root.thickness

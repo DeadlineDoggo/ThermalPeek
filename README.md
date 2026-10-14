@@ -11,7 +11,10 @@ Sensors come from KSysGuard, so anything it can read works: CPU, GPU, NVMe/SSD d
 other lm-sensors devices.
 
 ## Features
-- **5 display modes:** circle gauge, top bar, progress line, fire icon, text only
+- **6 display modes:** circle gauge, top bar, progress line, fire icon, hardware icon, text only
+- **Hardware icons:** CPU, GPU, NVMe, HDD, SSD, motherboard, bolt, unknown and point glyphs, picked
+  automatically per sensor (or manually). Set the icon colour, the fill colour (fixed or by level)
+  and whether the icon fills bottom-to-top or left-to-right like a progress bar
 - **Any temperature sensor** from KSysGuard, including CPU average/min/max, per-core, GPU and drives
 - **Tags** (CPU, GPU, NVME1…) with automatic suggestions, editable per sensor, shown above, below,
   left or right of the gauge
@@ -126,6 +129,7 @@ contents/ui/TempLabel.qml      temperature text
 contents/ui/Tags.js            automatic tag suggestions
 contents/ui/gauges/            CircleGauge, BarGauge, FireIcon
 contents/ui/config/            Sensors, Order and Appearance pages
+contents/icons/glyphs/         hardware glyphs for the icon mode (single-colour masks)
 contents/icons/                fire-1..5.svg (fire levels), order.svg (config page icon)
 docs/logo.svg                  project logo, also the widget icon
 docs/banner.svg                README banner (banner.png is generated, git-ignored)

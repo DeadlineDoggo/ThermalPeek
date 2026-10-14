@@ -5,6 +5,7 @@ import org.kde.kirigami as Kirigami
 import org.kde.kcmutils as KCM
 import org.kde.kitemmodels as KItemModels
 import org.kde.ksysguard.sensors as Sensors
+import "../Tags.js" as Tags
 
 KCM.ScrollViewKCM {
     id: page
@@ -15,7 +16,12 @@ KCM.ScrollViewKCM {
     function isSelected(id) { return selected.some(s => s.sensorId === id); }
     function tagOf(id) { const s = selected.find(s => s.sensorId === id); return s ? (s.tag ?? "") : ""; }
     function setTag(id, tag) {
-        selected = selected.map(s => s.sensorId === id ? { sensorId: s.sensorId, name: s.name, tag: tag } : s);
+        selected = selected.map(s => s.sensorId === id ? Object.assign({}, s, { tag: tag }) : s);
+        cfg_sensors = JSON.stringify(selected);
+    }
+    function iconOf(id) { const s = selected.find(s => s.sensorId === id); return s ? (s.icon ?? "auto") : "auto"; }
+    function setIcon(id, icon) {
+        selected = selected.map(s => s.sensorId === id ? Object.assign({}, s, { icon: icon }) : s);
         cfg_sensors = JSON.stringify(selected);
     }
     // Suggest a short tag: CPU, C1.., NVME1.., GPU.., else first word
@@ -122,6 +128,31 @@ KCM.ScrollViewKCM {
                         placeholderText: page.autoTag(sid, info.name)
                         text: page.tagOf(sid)
                         onTextEdited: page.setTag(sid, text)
+                    }
+                    QQC2.Label { text: i18n("Icon:"); font: Kirigami.Theme.smallFont }
+                    QQC2.ComboBox {
+                        id: iconBox
+                        Layout.preferredWidth: Kirigami.Units.gridUnit * 9
+                        textRole: "text"; valueRole: "value"
+                        model: [{ text: i18n("Auto (%1)", Tags.autoIcon(sid, info.name)), value: "auto" }]
+                                   .concat(Tags.glyphs.map(g => ({ text: g, value: g })))
+                        Component.onCompleted: currentIndex = Math.max(0, indexOfValue(page.iconOf(sid)))
+                        onActivated: page.setIcon(sid, currentValue)
+                        delegate: QQC2.ItemDelegate {
+                            required property var modelData
+                            width: iconBox.width
+                            highlighted: iconBox.highlightedIndex === index
+                            contentItem: RowLayout {
+                                Kirigami.Icon {
+                                    visible: modelData.value !== "auto"
+                                    source: Qt.resolvedUrl("../../icons/glyphs/" + modelData.value + ".svg")
+                                    isMask: true; color: Kirigami.Theme.textColor
+                                    implicitWidth: Kirigami.Units.iconSizes.smallMedium
+                                    implicitHeight: Kirigami.Units.iconSizes.smallMedium
+                                }
+                                QQC2.Label { text: modelData.text; Layout.fillWidth: true }
+                            }
+                        }
                     }
                 }
                 QQC2.Label {

@@ -12,6 +12,7 @@ GridLayout {
     required property string sensorId
     required property string sensorName
     property string sensorTag: ""
+    property string sensorIcon: "auto"
     property bool inPanel: false
     property real panelThickness: 0
 
@@ -40,9 +41,23 @@ GridLayout {
     readonly property bool vertTag: tagPos === "top" || tagPos === "bottom"
     readonly property bool tagShown: cfg.showTag && effectiveTag.length > 0
     // In a panel, leave room for the tag label above the gauge
-    readonly property int px: inPanel && panelThickness > 0
-        ? Math.max(14, Math.round(panelThickness * (cfg.displayMode === "circle" ? 0.9 : 0.55) * (tagShown && vertTag ? 0.75 : 1)))
-        : Math.round(cfg.gaugeSize)
+    readonly property real labelH: (cfg.fontSize > 0 ? cfg.fontSize : Kirigami.Theme.defaultFont.pixelSize) * 1.3
+    readonly property int px: {
+        if (!(inPanel && panelThickness > 0)) return Math.round(cfg.gaugeSize);
+        if (cfg.displayMode === "icon") {
+            // use all the room the panel leaves after the temperature text and a stacked tag
+            const used = (cfg.showTemp ? labelH + cfg.tagSpacing : 0) + (tagShown && vertTag ? labelH * 0.7 + cfg.tagSpacing : 0);
+            // the panel sets the maximum; "Gauge size" can only shrink the icon below that
+            return Math.max(14, Math.min(Math.round(cfg.gaugeSize), Math.round(panelThickness - used - 6)));
+        }
+        return Math.max(14, Math.round(panelThickness * (cfg.displayMode === "circle" ? 0.9 : 0.55) * (tagShown && vertTag ? 0.75 : 1)));
+    }
+    readonly property string glyph: sensorIcon === "auto" || sensorIcon.length === 0 ? Tags.autoIcon(sensorId, sensorName) : sensorIcon
+    // Glyph box: every glyph gets the same height so the row looks even; only very wide ones (NVMe) are capped
+    readonly property real glyphAspect: Tags.glyphAspect[glyph] ?? 1
+    readonly property real glyphW: px * Math.min(glyphAspect, 1.5)
+    readonly property real glyphH: glyphW / glyphAspect
+    readonly property color fillColor: cfg.fillColorMode === "custom" ? cfg.fillColor : levelColor
 
     readonly property string tempText: {
         if (!valid) return "–";
@@ -82,6 +97,7 @@ GridLayout {
             case "topbar": return topbarC;
             case "line":   return lineC;
             case "fire":   return fireC;
+            case "icon":   return iconC;
             default:       return textC;
         }
     }
@@ -115,6 +131,33 @@ GridLayout {
             FireIcon { Layout.alignment: Qt.AlignHCenter
                        Layout.preferredWidth: si.px; Layout.preferredHeight: si.px; level: si.level }
             TempLabel { host: si;}
+        }
+    }
+    // Hardware glyph tinted with the base colour, filled up (or sideways) with the fill colour
+    Component { id: iconC
+        ColumnLayout {
+            spacing: Kirigami.Units.smallSpacing
+            Item {
+                id: gl
+                Layout.alignment: Qt.AlignHCenter
+                implicitWidth: si.glyphW; implicitHeight: si.glyphH
+                readonly property bool up: si.cfg.fillDirection !== "side"
+                readonly property url src: Qt.resolvedUrl("../icons/glyphs/" + si.glyph + ".svg")
+                Kirigami.Icon { anchors.fill: parent; source: gl.src; isMask: true; color: si.cfg.iconColor }
+                Item {
+                    clip: true
+                    anchors.left: parent.left
+                    anchors.bottom: parent.bottom
+                    width: gl.up ? gl.width : Math.round(gl.width * si.fraction)
+                    height: gl.up ? Math.round(gl.height * si.fraction) : gl.height
+                    Kirigami.Icon {
+                        width: gl.width; height: gl.height
+                        x: 0; y: parent.height - gl.height
+                        source: gl.src; isMask: true; color: si.fillColor
+                    }
+                }
+            }
+            TempLabel { host: si }
         }
     }
     Component { id: textC

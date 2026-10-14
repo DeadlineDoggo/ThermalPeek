@@ -9,6 +9,10 @@ KCM.SimpleKCM {
     id: page
     property string cfg_displayMode
     property bool   cfg_showTag
+    property color  cfg_iconColor
+    property string cfg_fillColorMode
+    property color  cfg_fillColor
+    property string cfg_fillDirection
     property string cfg_tagPosition
     property bool   cfg_showTemp
     property int    cfg_itemSpacing
@@ -37,12 +41,36 @@ KCM.SimpleKCM {
                 { text: i18n("Top bar"),       value: "topbar" },
                 { text: i18n("Progress line"), value: "line" },
                 { text: i18n("Fire icon (1–5)"), value: "fire" },
+                { text: i18n("Icon (CPU, GPU, drive…)"), value: "icon" },
                 { text: i18n("Text only"),     value: "text" }
             ]
             Component.onCompleted: currentIndex = Math.max(0, indexOfValue(page.cfg_displayMode))
             onActivated: page.cfg_displayMode = currentValue
         }
-        QQC2.SpinBox { Kirigami.FormData.label: i18n("Gauge size (px):"); from: 16; to: 256; value: page.cfg_gaugeSize
+        Kirigami.Separator { Kirigami.FormData.isSection: true; Kirigami.FormData.label: i18n("Icon style")
+                             visible: page.cfg_displayMode === "icon" }
+        KQC.ColorButton { Kirigami.FormData.label: i18n("Icon colour:"); visible: page.cfg_displayMode === "icon"
+                          color: page.cfg_iconColor; onColorChanged: page.cfg_iconColor = color }
+        QQC2.ComboBox {
+            Kirigami.FormData.label: i18n("Fill colour:"); visible: page.cfg_displayMode === "icon"
+            textRole: "text"; valueRole: "value"
+            model: [ { text: i18n("By temperature level"), value: "level" }, { text: i18n("Custom"), value: "custom" } ]
+            Component.onCompleted: currentIndex = Math.max(0, indexOfValue(page.cfg_fillColorMode))
+            onActivated: page.cfg_fillColorMode = currentValue
+        }
+        KQC.ColorButton { Kirigami.FormData.label: i18n("Custom fill colour:")
+                          visible: page.cfg_displayMode === "icon"; enabled: page.cfg_fillColorMode === "custom"
+                          color: page.cfg_fillColor; onColorChanged: page.cfg_fillColor = color }
+        QQC2.ComboBox {
+            Kirigami.FormData.label: i18n("Fill direction:"); visible: page.cfg_displayMode === "icon"
+            textRole: "text"; valueRole: "value"
+            model: [ { text: i18n("Bottom to top"), value: "up" }, { text: i18n("Left to right"), value: "side" } ]
+            Component.onCompleted: currentIndex = Math.max(0, indexOfValue(page.cfg_fillDirection))
+            onActivated: page.cfg_fillDirection = currentValue
+        }
+        Kirigami.Separator { Kirigami.FormData.isSection: true; Kirigami.FormData.label: i18n("General")
+                             visible: page.cfg_displayMode === "icon" }
+        QQC2.SpinBox { Kirigami.FormData.label: i18n("Gauge size (px, max in panel):"); from: 16; to: 256; value: page.cfg_gaugeSize
                        onValueModified: page.cfg_gaugeSize = value }
         QQC2.CheckBox { text: i18n("Show tags (CPU, NVME1…)"); checked: page.cfg_showTag; onToggled: page.cfg_showTag = checked }
         QQC2.ComboBox {
