@@ -34,10 +34,12 @@ GridLayout {
     readonly property color fg: cfg.useCustomTextColor ? cfg.textColor : Kirigami.Theme.textColor
     // In a panel the gauge scales to the panel thickness; otherwise use the configured size
     readonly property string effectiveTag: sensorTag.length > 0 ? sensorTag : Tags.autoTag(sensorId, sensorName)
+    readonly property string tagPos: cfg.tagPosition || "top"
+    readonly property bool vertTag: tagPos === "top" || tagPos === "bottom"
     readonly property bool tagShown: cfg.showTag && effectiveTag.length > 0
     // In a panel, leave room for the tag label above the gauge
     readonly property int px: inPanel && panelThickness > 0
-        ? Math.max(14, Math.round(panelThickness * (cfg.displayMode === "circle" ? 0.9 : 0.55) * (tagShown ? 0.75 : 1)))
+        ? Math.max(14, Math.round(panelThickness * (cfg.displayMode === "circle" ? 0.9 : 0.55) * (tagShown && vertTag ? 0.75 : 1)))
         : Math.round(cfg.gaugeSize)
 
     readonly property string tempText: {
@@ -45,8 +47,8 @@ GridLayout {
         return cfg.fahrenheit ? Math.round(celsius * 9 / 5 + 32) + "°F" : Math.round(celsius) + "°C";
     }
 
-    // Tag above the gauge
-    columns: 1
+    // Tag placement relative to the gauge: top / bottom / left / right
+    columns: vertTag ? 1 : 2
     columnSpacing: Kirigami.Units.smallSpacing
     rowSpacing: Kirigami.Units.smallSpacing
 
@@ -58,6 +60,8 @@ GridLayout {
 
     PlasmaComponents.Label {
         visible: si.tagShown
+        Layout.row: si.tagPos === "bottom" ? 1 : 0
+        Layout.column: si.tagPos === "right" ? 1 : 0
         text: si.effectiveTag
         color: si.fg
         opacity: 0.75
@@ -68,6 +72,8 @@ GridLayout {
 
     // ---- gauge ----
     Loader {
+        Layout.row: si.tagPos === "top" ? 1 : 0
+        Layout.column: si.tagPos === "left" ? 1 : 0
         Layout.alignment: Qt.AlignHCenter
         sourceComponent: switch (si.cfg.displayMode) {
             case "circle": return circleC;
@@ -115,6 +121,9 @@ GridLayout {
 
     PlasmaComponents.Label {
         visible: si.cfg.showName && !si.inPanel && si.sensorName.length > 0
+        Layout.row: 2
+        Layout.column: 0
+        Layout.columnSpan: 2
         text: si.sensorName
         color: si.fg
         opacity: 0.7

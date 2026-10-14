@@ -9,6 +9,8 @@ KCM.SimpleKCM {
     id: page
     property string cfg_displayMode
     property bool   cfg_showTag
+    property string cfg_tagPosition
+    property bool   cfg_showTemp
     property bool   cfg_showName
     property bool   cfg_fahrenheit
     property int    cfg_updateRate
@@ -41,6 +43,21 @@ KCM.SimpleKCM {
         QQC2.SpinBox { Kirigami.FormData.label: i18n("Gauge size (px):"); from: 16; to: 256; value: page.cfg_gaugeSize
                        onValueModified: page.cfg_gaugeSize = value }
         QQC2.CheckBox { text: i18n("Show tags (CPU, NVME1…)"); checked: page.cfg_showTag; onToggled: page.cfg_showTag = checked }
+        QQC2.ComboBox {
+            Kirigami.FormData.label: i18n("Tag position:")
+            enabled: page.cfg_showTag
+            textRole: "text"; valueRole: "value"
+            model: [
+                { text: i18n("Above"),        value: "top" },
+                { text: i18n("Below"),        value: "bottom" },
+                { text: i18n("Left of icon"),  value: "left" },
+                { text: i18n("Right of icon"), value: "right" }
+            ]
+            Component.onCompleted: currentIndex = Math.max(0, indexOfValue(page.cfg_tagPosition))
+            onActivated: page.cfg_tagPosition = currentValue
+        }
+        QQC2.CheckBox { text: i18n("Show temperature value (ignored in text-only mode)"); checked: page.cfg_showTemp
+                        onToggled: page.cfg_showTemp = checked }
         QQC2.CheckBox { text: i18n("Show full sensor name (desktop only)"); checked: page.cfg_showName; onToggled: page.cfg_showName = checked }
         QQC2.CheckBox { text: i18n("Fahrenheit");       checked: page.cfg_fahrenheit; onToggled: page.cfg_fahrenheit = checked }
         QQC2.SpinBox { Kirigami.FormData.label: i18n("Update every (s):"); from: 1; to: 60; value: page.cfg_updateRate
