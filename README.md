@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/logo.svg" alt="Thermal Peek logo" width="160">
+  <img src="docs/banner.svg" alt="Thermal Peek: live system temperatures for your KDE Plasma panel">
 </p>
 
-<h1 align="center">Thermal Peek</h1>
+# Thermal Peek
 
 A KDE Plasma 6 widget that shows system temperatures in your panel (or on the desktop) as a circle
 gauge, top bar, progress line, fire icon (levels 1–5) or plain text.
@@ -128,6 +128,7 @@ contents/ui/gauges/            CircleGauge, BarGauge, FireIcon
 contents/ui/config/            Sensors, Order and Appearance pages
 contents/icons/                fire-1..5.svg (fire levels), order.svg (config page icon)
 docs/logo.svg                  project logo, also the widget icon
+docs/banner.svg                README banner (banner.png is generated, git-ignored)
 ```
 
 ## Roadmap
