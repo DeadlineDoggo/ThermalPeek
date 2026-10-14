@@ -1,0 +1,16 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Name": "Thermal Peek",
+        "Id": "org.kde.thermalpeek",
+        "Description": "System temperatures with circle, bar, line and fire-level displays",
+        "Category": "System Information",
+        "Icon": "temperature-warm",
+        "Authors": [{ "Name": "mr__kuko" }],
+        "Version": "0.1.0",
+        "License": "MIT"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-API": "declarativeappletscript",
+    "X-Plasma-MainScript": "ui/main.qml"
+}
