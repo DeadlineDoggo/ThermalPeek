@@ -11,6 +11,8 @@ KCM.SimpleKCM {
     property bool   cfg_showTag
     property string cfg_tagPosition
     property bool   cfg_showTemp
+    property int    cfg_itemSpacing
+    property int    cfg_tagSpacing
     property bool   cfg_showName
     property bool   cfg_fahrenheit
     property int    cfg_updateRate
@@ -56,6 +58,10 @@ KCM.SimpleKCM {
             Component.onCompleted: currentIndex = Math.max(0, indexOfValue(page.cfg_tagPosition))
             onActivated: page.cfg_tagPosition = currentValue
         }
+        QQC2.SpinBox { Kirigami.FormData.label: i18n("Space between sensors (px):"); from: 0; to: 64; value: page.cfg_itemSpacing
+                       onValueModified: page.cfg_itemSpacing = value }
+        QQC2.SpinBox { Kirigami.FormData.label: i18n("Space between tag and gauge (px):"); from: 0; to: 32; value: page.cfg_tagSpacing
+                       enabled: page.cfg_showTag; onValueModified: page.cfg_tagSpacing = value }
         QQC2.CheckBox { text: i18n("Show temperature value (ignored in text-only mode)"); checked: page.cfg_showTemp
                         onToggled: page.cfg_showTemp = checked }
         QQC2.CheckBox { text: i18n("Show full sensor name (desktop only)"); checked: page.cfg_showName; onToggled: page.cfg_showName = checked }

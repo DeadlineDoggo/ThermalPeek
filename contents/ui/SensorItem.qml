@@ -51,8 +51,8 @@ GridLayout {
 
     // Tag placement relative to the gauge: top / bottom / left / right
     columns: vertTag ? 1 : 2
-    columnSpacing: Kirigami.Units.smallSpacing
-    rowSpacing: Kirigami.Units.smallSpacing
+    columnSpacing: cfg.tagSpacing
+    rowSpacing: cfg.tagSpacing
 
     Sensors.Sensor {
         id: sensor

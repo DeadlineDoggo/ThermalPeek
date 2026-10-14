@@ -35,8 +35,8 @@ PlasmoidItem {
             visible: root.sensors.length > 0
             rows: root.horizontal ? 1 : -1
             columns: root.horizontal ? -1 : 1
-            columnSpacing: Kirigami.Units.largeSpacing
-            rowSpacing: Kirigami.Units.largeSpacing
+            columnSpacing: Plasmoid.configuration.itemSpacing
+            rowSpacing: Plasmoid.configuration.itemSpacing
 
             Repeater {
                 model: root.sensors
