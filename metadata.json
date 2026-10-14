@@ -5,7 +5,7 @@
         "Id": "org.kde.thermalpeek",
         "Description": "System temperatures with circle, bar, line and fire-level displays",
         "Category": "System Information",
-        "Icon": "temperature-warm",
+        "Icon": "org.kde.thermalpeek",
         "Authors": [{ "Name": "mr__kuko" }],
         "Version": "0.1.0",
         "License": "MIT"

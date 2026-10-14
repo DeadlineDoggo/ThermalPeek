@@ -1,4 +1,8 @@
-# Thermal Peek
+<p align="center">
+  <img src="docs/logo.svg" alt="Thermal Peek logo" width="160">
+</p>
+
+<h1 align="center">Thermal Peek</h1>
 
 A KDE Plasma 6 widget that shows system temperatures in your panel (or on the desktop) as a circle
 gauge, top bar, progress line, fire icon (levels 1–5) or plain text.
@@ -43,6 +47,13 @@ Remove:
 
 ```bash
 kpackagetool6 -t Plasma/Applet -r org.kde.thermalpeek
+```
+
+Install the widget icon (shown in *Add Widgets* and the widget settings) once:
+
+```bash
+install -Dm644 docs/logo.svg \
+  ~/.local/share/icons/hicolor/scalable/apps/org.kde.thermalpeek.svg
 ```
 
 Reload the shell so changes show up:
@@ -116,6 +127,7 @@ contents/ui/Tags.js            automatic tag suggestions
 contents/ui/gauges/            CircleGauge, BarGauge, FireIcon
 contents/ui/config/            Sensors, Order and Appearance pages
 contents/icons/                fire-1..5.svg (fire levels), order.svg (config page icon)
+docs/logo.svg                  project logo, also the widget icon
 ```
 
 ## Roadmap
